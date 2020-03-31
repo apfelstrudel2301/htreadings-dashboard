@@ -1,8 +1,8 @@
-variable "lambda_rds_post_invoke_arn" {
+variable "lambda_single_post_invoke_arn" {
   type    = string
 }
 
-variable "lambda_rds_bulk_post_invoke_arn" {
+variable "lambda_bulk_post_invoke_arn" {
   type    = string
 }
 

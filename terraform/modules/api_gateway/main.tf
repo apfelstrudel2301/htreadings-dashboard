@@ -23,15 +23,15 @@ resource "aws_api_gateway_method" "api_gw_meth_single" {
 
  resource "aws_api_gateway_integration" "integration_single" {
    rest_api_id = aws_api_gateway_rest_api.api_gw.id
-   resource_id = aws_api_gateway_method.api_gw_meth_bulk.resource_id
+   resource_id = aws_api_gateway_method.api_gw_meth_single.resource_id
    http_method = aws_api_gateway_method.api_gw_meth_single.http_method
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
-   uri                     = var.lambda_rds_post_invoke_arn
+   uri                     = var.lambda_single_post_invoke_arn
  }
 
   # Bulk POST
-  resource "aws_api_gateway_resource" "api_gw_res_bulk" {
+resource "aws_api_gateway_resource" "api_gw_res_bulk" {
    rest_api_id = aws_api_gateway_rest_api.api_gw.id
    parent_id   = aws_api_gateway_rest_api.api_gw.root_resource_id
    path_part   = var.api_gw_res_path_bulk
@@ -51,16 +51,14 @@ resource "aws_api_gateway_method" "api_gw_meth_bulk" {
    http_method             = aws_api_gateway_method.api_gw_meth_bulk.http_method
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
-   uri                     = var.lambda_rds_post_invoke_arn
+   uri                     = var.lambda_bulk_post_invoke_arn
  }
-
 
 resource "aws_api_gateway_deployment" "api_deployment" {
    depends_on  = [
      aws_api_gateway_integration.integration_single,
      aws_api_gateway_integration.integration_bulk
    ]
-
    rest_api_id = aws_api_gateway_rest_api.api_gw.id
    stage_name  = "int"
  }

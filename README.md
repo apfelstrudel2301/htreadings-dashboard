@@ -3,6 +3,7 @@
 ## Prerequesites
 - AWS CLI installed and configured
 - Terraform installed
+- Python / pip installed
 
 ## Install AWS infrastructure
 
@@ -15,6 +16,8 @@ pip install -r requirements.txt --target .
  ```bash
 cd ../../../terraform
 ```
+
+Create AWS infrastructure with Terraform
 
  ```bash
 terraform init

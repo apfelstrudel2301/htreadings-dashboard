@@ -1,31 +1,31 @@
 module "lambda_init_db" {
   source = "./lambda_init_db"
+  lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
+  lambda_code_s3            = aws_s3_bucket.lambda_code_s3.id
   rds_db_instance_address   = var.rds_db_instance_address
   rds_db_instance_name      = var.rds_db_instance_name
   rds_db_instance_username  = var.rds_db_instance_username
   api_gateway_execution_arn = var.api_gateway_execution_arn
-  lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
-  lambda_code_s3            = aws_s3_bucket.s3-htreadings-lambda.id
 }
 
 module "lambda_htreadings_single_post" {
   source = "./lambda_htreadings_single_post"
+  lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
+  lambda_code_s3            = aws_s3_bucket.lambda_code_s3.id
   rds_db_instance_address   = var.rds_db_instance_address
   rds_db_instance_name      = var.rds_db_instance_name
   rds_db_instance_username  = var.rds_db_instance_username
   api_gateway_execution_arn = var.api_gateway_execution_arn
-  lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
-  lambda_code_s3            = aws_s3_bucket.s3-htreadings-lambda.id
 }
 
 module "lambda_htreadings_bulk_post" {
   source = "./lambda_htreadings_bulk_post"
+  lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
+  lambda_code_s3            = aws_s3_bucket.lambda_code_s3.id
   rds_db_instance_address   = var.rds_db_instance_address
   rds_db_instance_name      = var.rds_db_instance_name
   rds_db_instance_username  = var.rds_db_instance_username
   api_gateway_execution_arn = var.api_gateway_execution_arn
-  lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
-  lambda_code_s3            = aws_s3_bucket.s3-htreadings-lambda.id
 }
 
 # IAM role which dictates what other AWS services the Lambda function
@@ -50,12 +50,12 @@ resource "aws_iam_role" "lambda_exec" {
 
 }
 
-resource "aws_iam_role_policy_attachment" "example-AWSLambdaVPCAccessExecutionRole" {
+resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
   role       = "htreadings-rds-post-tf"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
   depends_on = [aws_iam_role.lambda_exec]
 }
 
-resource "aws_s3_bucket" "s3-htreadings-lambda" {
+resource "aws_s3_bucket" "lambda_code_s3" {
   bucket = "htreadings-lambda-tf"
 }
