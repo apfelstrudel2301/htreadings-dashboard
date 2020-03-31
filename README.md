@@ -28,7 +28,7 @@ terraform plan
 terraform apply
 ```
 
-- Execute the init-db lambda function
+Execute the init-db lambda function in AWS to create the htreadings table.
 
 Running `terraform apply` will create the ElasticBeanstalk environment, application and application version for our deployment file but it will not actually deploy the application. For this we need to use the aws cli to update the environment’s application version.
  ```bash

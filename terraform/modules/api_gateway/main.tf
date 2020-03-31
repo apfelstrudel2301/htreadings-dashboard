@@ -1,86 +1,84 @@
-resource "aws_api_gateway_rest_api" "sensordata-api-tf" {
-  name        = "sensordata-api-tf"
+resource "aws_api_gateway_rest_api" "api_gw" {
+  name        = var.api_gw_name
   description = "API for sensordata"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
 }
 
- resource "aws_api_gateway_resource" "proxy" {
-   rest_api_id = aws_api_gateway_rest_api.sensordata-api-tf.id
-   parent_id   = aws_api_gateway_rest_api.sensordata-api-tf.root_resource_id
-   path_part   = "htreadings-rds"
+# Single POST
+resource "aws_api_gateway_resource" "api_gw_res_single" {
+   rest_api_id = aws_api_gateway_rest_api.api_gw.id
+   parent_id   = aws_api_gateway_rest_api.api_gw.root_resource_id
+   path_part   = var.api_gw_res_path_single
 }
 
-resource "aws_api_gateway_method" "proxy" {
-   rest_api_id   = aws_api_gateway_rest_api.sensordata-api-tf.id
-   resource_id   = aws_api_gateway_resource.proxy.id
-   http_method   = "POST"
-   authorization = "NONE"
+resource "aws_api_gateway_method" "api_gw_meth_single" {
+   rest_api_id      = aws_api_gateway_rest_api.api_gw.id
+   resource_id      = aws_api_gateway_resource.api_gw_res_single.id
+   http_method      = "POST"
+   authorization    = "NONE"
    api_key_required = true
  }
 
- resource "aws_api_gateway_integration" "lambda" {
-   rest_api_id = aws_api_gateway_rest_api.sensordata-api-tf.id
-   resource_id = aws_api_gateway_method.proxy.resource_id
-   http_method = aws_api_gateway_method.proxy.http_method
-
+ resource "aws_api_gateway_integration" "integration_single" {
+   rest_api_id = aws_api_gateway_rest_api.api_gw.id
+   resource_id = aws_api_gateway_method.api_gw_meth_bulk.resource_id
+   http_method = aws_api_gateway_method.api_gw_meth_single.http_method
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
    uri                     = var.lambda_rds_post_invoke_arn
  }
 
-  # Bulk
-  resource "aws_api_gateway_resource" "proxy-bulk" {
-   rest_api_id = aws_api_gateway_rest_api.sensordata-api-tf.id
-   parent_id   = aws_api_gateway_rest_api.sensordata-api-tf.root_resource_id
-   path_part   = "htreadings-rds-bulk"
+  # Bulk POST
+  resource "aws_api_gateway_resource" "api_gw_res_bulk" {
+   rest_api_id = aws_api_gateway_rest_api.api_gw.id
+   parent_id   = aws_api_gateway_rest_api.api_gw.root_resource_id
+   path_part   = var.api_gw_res_path_bulk
 }
 
-resource "aws_api_gateway_method" "proxy-bulk" {
-   rest_api_id   = aws_api_gateway_rest_api.sensordata-api-tf.id
-   resource_id   = aws_api_gateway_resource.proxy-bulk.id
-   http_method   = "POST"
-   authorization = "NONE"
+resource "aws_api_gateway_method" "api_gw_meth_bulk" {
+   rest_api_id      = aws_api_gateway_rest_api.api_gw.id
+   resource_id      = aws_api_gateway_resource.api_gw_res_bulk.id
+   http_method      = "POST"
+   authorization    = "NONE"
    api_key_required = true
  }
 
- resource "aws_api_gateway_integration" "lambda-bulk" {
-   rest_api_id = aws_api_gateway_rest_api.sensordata-api-tf.id
-   resource_id = aws_api_gateway_method.proxy-bulk.resource_id
-   http_method = aws_api_gateway_method.proxy-bulk.http_method
-
+ resource "aws_api_gateway_integration" "integration_bulk" {
+   rest_api_id             = aws_api_gateway_rest_api.api_gw.id
+   resource_id             = aws_api_gateway_method.api_gw_meth_bulk.resource_id
+   http_method             = aws_api_gateway_method.api_gw_meth_bulk.http_method
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
    uri                     = var.lambda_rds_post_invoke_arn
  }
 
 
- resource "aws_api_gateway_deployment" "sensordata-api-deployment1" {
-   depends_on = [
-     aws_api_gateway_integration.lambda,
-     aws_api_gateway_integration.lambda-bulk
+resource "aws_api_gateway_deployment" "api_deployment" {
+   depends_on  = [
+     aws_api_gateway_integration.integration_single,
+     aws_api_gateway_integration.integration_bulk
    ]
 
-   rest_api_id = aws_api_gateway_rest_api.sensordata-api-tf.id
-   stage_name  = "test-stage"
+   rest_api_id = aws_api_gateway_rest_api.api_gw.id
+   stage_name  = "int"
  }
 
- resource "aws_api_gateway_usage_plan" "usageplan" {
-  name = "sensordata-api-tf-usage-plan"
-
+resource "aws_api_gateway_usage_plan" "usageplan" {
+  name = "sensordata-api-usage-plan"
   api_stages {
-    api_id = aws_api_gateway_rest_api.sensordata-api-tf.id
-    stage  = aws_api_gateway_deployment.sensordata-api-deployment1.stage_name
+    api_id = aws_api_gateway_rest_api.api_gw.id
+    stage  = aws_api_gateway_deployment.api_deployment.stage_name
   }
 }
 
-resource "aws_api_gateway_api_key" "apikey" {
-  name = "sensordata-api-tf"
+resource "aws_api_gateway_api_key" "api_key" {
+  name = "sensordata-api-key"
 }
 
 resource "aws_api_gateway_usage_plan_key" "main" {
-  key_id        = aws_api_gateway_api_key.apikey.id
+  key_id        = aws_api_gateway_api_key.api_key.id
   key_type      = "API_KEY"
   usage_plan_id = aws_api_gateway_usage_plan.usageplan.id
 }
