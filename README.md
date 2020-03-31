@@ -1,4 +1,5 @@
 # htreadings-aws
+Build a dashboard for visualizing humidity and temperature sensor readings (e.g. from a raspberry pi) with AWS infrastructure.
 
 ## Prerequesites
 - AWS CLI installed and configured

@@ -9,7 +9,7 @@ module "lambda_init_db" {
 }
 
 module "lambda_htreadings_single_post" {
-  source = "./lambda_htreadings_single_post"
+  source = "./lambda_htreadings_post"
   lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
   lambda_code_s3            = aws_s3_bucket.lambda_code_s3.id
   rds_db_instance_address   = var.rds_db_instance_address
@@ -19,13 +19,17 @@ module "lambda_htreadings_single_post" {
 }
 
 module "lambda_htreadings_bulk_post" {
-  source = "./lambda_htreadings_bulk_post"
+  source = "./lambda_htreadings_post"
   lambda_iam_exec_arn       = aws_iam_role.lambda_exec.arn
   lambda_code_s3            = aws_s3_bucket.lambda_code_s3.id
   rds_db_instance_address   = var.rds_db_instance_address
   rds_db_instance_name      = var.rds_db_instance_name
   rds_db_instance_username  = var.rds_db_instance_username
   api_gateway_execution_arn = var.api_gateway_execution_arn
+  lambda_name               = "htreadings-bulk-post"
+  lambda_code               = "../code/lambda/htreadings-rds-bulk-post/"
+  lambda_code_zip           = "../code/lambda/htreadings-rds-bulk-post.zip"
+  lambda_code_s3_path       = "htreadings-rds-bulk-post/v1.0.0/htreadings-rds-bulk-post.zip"
 }
 
 # IAM role which dictates what other AWS services the Lambda function
