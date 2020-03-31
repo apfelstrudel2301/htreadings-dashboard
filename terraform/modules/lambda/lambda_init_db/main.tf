@@ -5,7 +5,7 @@ data "archive_file" "dbinitfiles" {
 }
 
 resource "aws_s3_bucket_object" "s3-object-init-db-lambda" {
-  bucket = aws_s3_bucket.s3-htreadings-lambda.id
+  bucket = var.lambda_code_s3
   key    = "init-db/v1.0.0/init-db.zip"
   source = "../code/lambda/init-db.zip"
 }
@@ -22,7 +22,7 @@ resource "aws_lambda_function" "init-db-tf" {
       security_group_ids = ["sg-595bde3e"]
   }
 
-  role = aws_iam_role.lambda_exec.arn
+  role = var.lambda_iam_exec_arn
 
   environment {
     variables = {
@@ -31,5 +31,5 @@ resource "aws_lambda_function" "init-db-tf" {
       DB_USERNAME = var.rds_db_instance_username
     }
   }
-  depends_on = [aws_iam_role_policy_attachment.example-AWSLambdaVPCAccessExecutionRole]
+  # depends_on = [aws_iam_role_policy_attachment.example-AWSLambdaVPCAccessExecutionRole]
 }

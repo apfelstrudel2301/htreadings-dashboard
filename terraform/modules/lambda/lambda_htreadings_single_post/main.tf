@@ -4,12 +4,8 @@ data "archive_file" "dotfiles" {
   source_dir = "../code/lambda/htreadings-rds-post/"
 }
 
-resource "aws_s3_bucket" "s3-htreadings-lambda" {
-  bucket = "htreadings-lambda-tf"
-}
-
 resource "aws_s3_bucket_object" "s3-object-htreadings-lambda" {
-  bucket = aws_s3_bucket.s3-htreadings-lambda.id
+  bucket = var.lambda_code_s3
   key    = "htreadings-rds-post/v1.0.0/htreadings-rds-post.zip"
   source = "../code/lambda/htreadings-rds-post.zip"
 }
@@ -26,7 +22,7 @@ resource "aws_lambda_function" "htreadings-rds-post-tf" {
       security_group_ids = ["sg-595bde3e"]
   }
 
-  role = aws_iam_role.lambda_exec.arn
+  role = var.lambda_iam_exec_arn
 
   environment {
     variables = {
@@ -35,35 +31,7 @@ resource "aws_lambda_function" "htreadings-rds-post-tf" {
       DB_USERNAME = var.rds_db_instance_username
     }
   }
-  depends_on = [aws_iam_role_policy_attachment.example-AWSLambdaVPCAccessExecutionRole]
-}
-
-# IAM role which dictates what other AWS services the Lambda function
-# may access.
-resource "aws_iam_role" "lambda_exec" {
-  name = "htreadings-rds-post-tf"
-  assume_role_policy = <<EOF
-{
-   "Version": "2012-10-17",
-   "Statement": [
-     {
-       "Action": "sts:AssumeRole",
-       "Principal": {
-         "Service": "lambda.amazonaws.com"
-       },
-       "Effect": "Allow",
-       "Sid": ""
-     }
-   ]
- }
- EOF
-
-}
-
-resource "aws_iam_role_policy_attachment" "example-AWSLambdaVPCAccessExecutionRole" {
-  role       = "htreadings-rds-post-tf"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-  depends_on = [aws_iam_role.lambda_exec]
+  # depends_on = [aws_iam_role_policy_attachment.example-AWSLambdaVPCAccessExecutionRole]
 }
 
  resource "aws_lambda_permission" "apigw" {
