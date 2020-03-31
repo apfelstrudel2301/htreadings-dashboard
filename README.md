@@ -6,8 +6,7 @@
 
 ## Install AWS infrastructure
 
-```bash
-cd code/lambda/htreadings-rds-post
+Get the python requirements for all Lambda functions in `/code/lambda`
 ```
  ```bash
 pip install -r requirements.txt --target .
