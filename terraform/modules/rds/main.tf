@@ -5,9 +5,9 @@ resource "aws_db_instance" "sensordata_db" {
   engine               = "mysql"
   engine_version       = "5.7"
   instance_class       = "db.t2.micro"
-  name                 = "sensordata"
-  username             = "admin"
-  password             = "adminadmin"
+  name                 = var.rds_instance_db_name
+  username             = var.rds_instance_db_username
+  password             = var.rds_instance_db_pw
   parameter_group_name = "default.mysql5.7"
   delete_automated_backups = true
   deletion_protection      = false

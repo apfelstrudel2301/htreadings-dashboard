@@ -20,6 +20,9 @@ module "lambda" {
 
 module "rds" {
   source = "./modules/rds"
+  rds_instance_db_name = "sensordata"
+  rds_instance_db_username = "admin"
+  rds_instance_db_pw = "adminadmin"
 }
 
 module "beanstalk" {
