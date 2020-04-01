@@ -16,6 +16,10 @@ module "lambda_htreadings_single_post" {
   rds_db_instance_name      = var.rds_db_instance_name
   rds_db_instance_username  = var.rds_db_instance_username
   api_gateway_execution_arn = var.api_gateway_execution_arn
+  lambda_name               = "htreadings-single-post"
+  lambda_code               = "../code/lambda/htreadings-single-post/"
+  lambda_code_zip           = "../code/lambda/htreadings-single-post.zip"
+  lambda_code_s3_path       = "htreadings-single-post/v1.0.0/htreadings-single-post.zip"
 }
 
 module "lambda_htreadings_bulk_post" {
@@ -27,9 +31,9 @@ module "lambda_htreadings_bulk_post" {
   rds_db_instance_username  = var.rds_db_instance_username
   api_gateway_execution_arn = var.api_gateway_execution_arn
   lambda_name               = "htreadings-bulk-post"
-  lambda_code               = "../code/lambda/htreadings-rds-bulk-post/"
-  lambda_code_zip           = "../code/lambda/htreadings-rds-bulk-post.zip"
-  lambda_code_s3_path       = "htreadings-rds-bulk-post/v1.0.0/htreadings-rds-bulk-post.zip"
+  lambda_code               = "../code/lambda/htreadings-bulk-post/"
+  lambda_code_zip           = "../code/lambda/htreadings-bulk-post.zip"
+  lambda_code_s3_path       = "htreadings-bulk-post/v1.0.0/htreadings-bulk-post.zip"
 }
 
 # IAM role which dictates what other AWS services the Lambda function
