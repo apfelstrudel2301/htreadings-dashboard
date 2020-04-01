@@ -39,7 +39,7 @@ module "lambda_htreadings_bulk_post" {
 # IAM role which dictates what other AWS services the Lambda function
 # may access.
 resource "aws_iam_role" "lambda_exec" {
-  name = "htreadings-rds-post-tf"
+  name = "htreadings-post-exec-role"
   assume_role_policy = <<EOF
 {
    "Version": "2012-10-17",
@@ -59,11 +59,11 @@ resource "aws_iam_role" "lambda_exec" {
 }
 
 resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
-  role       = "htreadings-rds-post-tf"
+  role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
   depends_on = [aws_iam_role.lambda_exec]
 }
 
 resource "aws_s3_bucket" "lambda_code_s3" {
-  bucket = "htreadings-lambda-tf"
+  bucket = "sensordata-lambda"
 }
