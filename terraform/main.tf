@@ -1,7 +1,7 @@
 module "api_gateway" {
   source                        = "./modules/api_gateway"
-  lambda_single_post_invoke_arn = module.lambda.lambda_rds_post_invoke_arn
-  lambda_bulk_post_invoke_arn   = module.lambda.lambda_rds_bulk_post_invoke_arn
+  lambda_single_post_invoke_arn = module.lambda.lambda_single_post_invoke_arn
+  lambda_bulk_post_invoke_arn   = module.lambda.lambda_bulk_post_invoke_arn
 }
 
 module "lambda" {
