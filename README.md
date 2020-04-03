@@ -1,5 +1,5 @@
 # htreadings-aws
-Build a dashboard for visualizing humidity and temperature sensor readings (e.g. from a raspberry pi) with AWS infrastructure.
+Build a dashboard for visualizing humidity and temperature sensor readings (e.g. from a raspberry pi) with AWS infrastructure. It is best used together with [htreadings-client](https://github.com/apfelstrudel2301/htreadings-client).
 
 ## Prerequesites
 - AWS CLI installed and configured
@@ -66,4 +66,3 @@ The terraform script is creating the following infrastructure:
 - Beanstalk application: for hosting the dashboard that is showing the sensordata
 
 All the infrastucture created should be with the AWS free tier (without giving any guarantees).
-

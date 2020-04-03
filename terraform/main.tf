@@ -1,7 +1,7 @@
 module "api_gateway" {
-  source                         = "./modules/api_gateway"
-  lambda_single_post_invoke_arn  = module.lambda.lambda_rds_post_invoke_arn
-  lambda_bulk_post_invoke_arn    = module.lambda.lambda_rds_bulk_post_invoke_arn
+  source                        = "./modules/api_gateway"
+  lambda_single_post_invoke_arn = module.lambda.lambda_rds_post_invoke_arn
+  lambda_bulk_post_invoke_arn   = module.lambda.lambda_rds_bulk_post_invoke_arn
 }
 
 module "lambda" {
@@ -19,15 +19,15 @@ module "lambda" {
 # }
 
 module "rds" {
-  source = "./modules/rds"
-  rds_instance_db_name = "sensordata"
+  source                   = "./modules/rds"
+  rds_instance_db_name     = "sensordata"
   rds_instance_db_username = "admin"
-  rds_instance_db_pw = "adminadmin"
+  rds_instance_db_pw       = "adminadmin"
 }
 
 module "beanstalk" {
-  source                    = "./modules/beanstalk"
-  rds_db_instance_address   = module.rds.db_instance_address
-  rds_db_instance_name      = module.rds.db_instance_name
-  rds_db_instance_username  = module.rds.db_instance_username
+  source                   = "./modules/beanstalk"
+  rds_db_instance_address  = module.rds.db_instance_address
+  rds_db_instance_name     = module.rds.db_instance_name
+  rds_db_instance_username = module.rds.db_instance_username
 }
