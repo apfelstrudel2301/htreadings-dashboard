@@ -21,6 +21,8 @@ cd terraform
 terraform init
 ```
 
+The Terraform scripts will ask for a `cname_prefix`. Your dashboard will in the end be reachable at *https.//**<cname_prefix>**.your-aws-region.elasticbeanstalk.com*. You have to chose a unique prefix, otherwise Terraform will throw an error. If there is an error you can execute the following two commands again with another cname_prefix.
+
  ```bash
 terraform plan
 ```

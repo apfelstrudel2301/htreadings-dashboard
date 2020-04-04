@@ -27,6 +27,7 @@ module "rds" {
 
 module "beanstalk" {
   source                   = "./modules/beanstalk"
+  bs_env_name_cname_prefix = var.cname_prefix # "${uuidv5("url", "sensordata-dashboard")}"
   rds_db_instance_address  = module.rds.db_instance_address
   rds_db_instance_name     = module.rds.db_instance_name
   rds_db_instance_username = module.rds.db_instance_username
