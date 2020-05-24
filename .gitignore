@@ -30,3 +30,5 @@ override.tf.json
 
 *.zip
 output.json
+.idea
+code/beanstalk/htreadings-server.zip

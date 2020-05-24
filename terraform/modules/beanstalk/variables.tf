@@ -42,7 +42,7 @@ variable "bs_code_source" {
 
 variable "bs_code_path_zip" {
   type    = string
-  default = "../code/beanstalk/htreadings-server/htreadings-server.zip"
+  default = "../code/beanstalk/htreadings-server.zip"
 }
 
 variable "bs_code_s3_path" {
