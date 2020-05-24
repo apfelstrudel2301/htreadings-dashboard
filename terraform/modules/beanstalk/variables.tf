@@ -27,7 +27,7 @@ variable "bs_env_name_cname_prefix" {
 
 variable "bs_env_solution_stack" {
   type    = string
-  default = "64bit Amazon Linux 2018.03 v2.9.7 running Python 3.6"
+  default = "64bit Amazon Linux 2018.03 v2.9.10 running Python 3.6"
 }
 
 variable "bs_app_version_name" {
