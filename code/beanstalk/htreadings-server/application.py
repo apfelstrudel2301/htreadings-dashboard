@@ -78,18 +78,18 @@ def update_graph_live(n):
 
     fig.add_trace(
         go.Scatter(x=data['time'], y=data['temperature'], name="Temperature", text=data['temperature'],
-                   mode='lines+markers'),
+                   mode='lines+markers', y0=0),
         secondary_y=False,
     )
 
     fig.add_trace(
         go.Scatter(x=data['time'], y=data['humidity'], name="Humidity", text=data['humidity'],
-                   mode='lines+markers'),
+                   mode='lines+markers', y0=0),
         secondary_y=True,
     )
     fig.update_xaxes(title_text="Timestamp")
-    fig.update_yaxes(title_text="Temperature in °C", secondary_y=False)
-    fig.update_yaxes(title_text="Humidity in %", secondary_y=True)
+    fig.update_yaxes(title_text="Temperature in °C", secondary_y=False, range=[10, 70], dtick=10, autorange=False)
+    fig.update_yaxes(title_text="Humidity in %", secondary_y=True, range=[10, 70], dtick=10, autorange=False)
 
     # fig.append_trace({
     #     'x': data['time'],
@@ -114,10 +114,11 @@ def update_graph_live(n):
 def get_latest_values(n_values=last_n_values, n_minutes=last_n_minutes, s3=False, mock=False):
     if mock:
         import random
-        num_entries = 10
+        num_entries = 100
         base = datetime.datetime.today()
         timestamps = [base - datetime.timedelta(days=x) for x in range(num_entries)]
-        return timestamps, random.sample(range(10, 30), num_entries), random.sample(range(30, 60), num_entries)
+        return timestamps, [random.randint(20, 30) for _ in range(num_entries)], [random.randint(30, 50) for _ in
+                                                                                  range(num_entries)]
     if s3:
         conn = connect(s3_staging_dir='s3://athena-results-htreadings/',
                        region_name='eu-central-1')
