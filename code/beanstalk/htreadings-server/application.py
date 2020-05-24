@@ -13,6 +13,7 @@ RDS_ENDPOINT = os.environ.get('RDS_ENDPOINT')
 DB_NAME = os.environ.get('DB_NAME')
 DB_USERNAME = os.environ.get('DB_USERNAME')
 
+# TODO: set to False
 mock_sensor_readings = False
 
 last_n_values = 200
@@ -25,7 +26,7 @@ application = app.server
 
 app.layout = html.Div(
     html.Div([
-        html.H4('Indoor Temperature and Humidity'),
+        html.H2('Indoor Temperature and Humidity'),
         html.Div(id='live-update-text'),
         dcc.Graph(id='live-update-graph'),
         dcc.Interval(
