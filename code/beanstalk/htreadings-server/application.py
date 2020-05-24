@@ -2,16 +2,18 @@ import datetime
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly
-import pymysql as pymysql
+import plotly.subplots
+import plotly.graph_objects as go
+import pymysql
 from dash.dependencies import Input, Output
 from pyathena import connect
 import os
 
-
 RDS_ENDPOINT = os.environ.get('RDS_ENDPOINT')
 DB_NAME = os.environ.get('DB_NAME')
 DB_USERNAME = os.environ.get('DB_USERNAME')
+
+mock_sensor_readings = False
 
 last_n_values = 200
 last_n_minutes = 0
@@ -38,16 +40,16 @@ app.layout = html.Div(
 @app.callback(Output('live-update-text', 'children'),
               [Input('interval-component', 'n_intervals')])
 def update_metrics(n):
-    timestamps, temperatures, humidities = get_latest_values(n_values=1, s3=False)
+    timestamps, temperatures, humidities = get_latest_values(n_values=1, s3=False, mock=mock_sensor_readings)
     timestamp = timestamps[0]
     temperature = temperatures[0]
     humidity = humidities[0]
     style = {'padding': '5px', 'fontSize': '16px'}
     return [
-        html.Span('Timestamp data: {}'.format(timestamp), style=style),
-        html.Span('Temperature: {0:.2f}'.format(temperature), style=style),
-        html.Span('Humidity: {0:.2f}'.format(humidity), style=style),
-        html.Span('Timestamp last dashboard update: {}'.format(datetime.datetime.now()), style=style),
+        html.P('Last update: {}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), style=style),
+        html.Span('Timestamp: {}'.format(timestamp.strftime("%Y-%m-%d %H:%M:%S")), style=style),
+        html.Span('Temperature: {0:.2f}°C'.format(temperature), style=style),
+        html.Span('Humidity: {0:.2f}%'.format(humidity), style=style),
     ]
 
 
@@ -60,42 +62,64 @@ def update_graph_live(n):
         'temperature': [],
         'humidity': []
     }
-    timestamps, temperatures, humidities = get_latest_values(s3=False)
+    timestamps, temperatures, humidities = get_latest_values(s3=False, mock=mock_sensor_readings)
     data['temperature'] = temperatures
     data['time'] = timestamps
     data['humidity'] = humidities
 
     # Create the graph with subplots
-    fig = plotly.subplots.make_subplots(rows=1, cols=1, vertical_spacing=0.2)
+    fig = plotly.subplots.make_subplots(rows=1, cols=1, vertical_spacing=0.2, specs=[[{"secondary_y": True}]])
     fig['layout']['margin'] = {
         'l': 30, 'r': 10, 'b': 30, 't': 10
     }
     fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
+    # fig.update_layout(template='plotly_dark')
 
-    fig.append_trace({
-        'x': data['time'],
-        'y': data['temperature'],
-        'name': 'Temperature',
-        'text': data['temperature'],
-        'mode': 'lines+markers',
-        'type': 'scatter'
-    }, 1, 1)
-    fig.append_trace({
-        'x': data['time'],
-        'y': data['humidity'],
-        'name': 'Humidity',
-        'text': data['humidity'],
-        'mode': 'lines+markers',
-        'type': 'scatter'
-    }, 1, 1)
+    fig.add_trace(
+        go.Scatter(x=data['time'], y=data['temperature'], name="Temperature", text=data['temperature'],
+                   mode='lines+markers'),
+        secondary_y=False,
+    )
+
+    fig.add_trace(
+        go.Scatter(x=data['time'], y=data['humidity'], name="Humidity", text=data['humidity'],
+                   mode='lines+markers'),
+        secondary_y=True,
+    )
+    fig.update_xaxes(title_text="Timestamp")
+    fig.update_yaxes(title_text="Temperature in °C", secondary_y=False)
+    fig.update_yaxes(title_text="Humidity in %", secondary_y=True)
+
+    # fig.append_trace({
+    #     'x': data['time'],
+    #     'y': data['temperature'],
+    #     'name': 'Temperature',
+    #     'text': data['temperature'],
+    #     'mode': 'lines+markers',
+    #     'type': 'scatter'
+    # }, 1, 1)
+    # fig.append_trace({
+    #     'x': data['time'],
+    #     'y': data['humidity'],
+    #     'name': 'Humidity',
+    #     'text': data['humidity'],
+    #     'mode': 'lines+markers',
+    #     'type': 'scatter'
+    # }, 1, 1)
 
     return fig
 
 
-def get_latest_values(n_values=last_n_values, n_minutes=last_n_minutes, s3=False):
+def get_latest_values(n_values=last_n_values, n_minutes=last_n_minutes, s3=False, mock=False):
+    if mock:
+        import random
+        num_entries = 10
+        base = datetime.datetime.today()
+        timestamps = [base - datetime.timedelta(days=x) for x in range(num_entries)]
+        return timestamps, random.sample(range(10, 30), num_entries), random.sample(range(30, 60), num_entries)
     if s3:
         conn = connect(s3_staging_dir='s3://athena-results-htreadings/',
-                           region_name='eu-central-1')
+                       region_name='eu-central-1')
         table_name = 'sensordata.htreadings'
     else:
         password = 'adminadmin'
